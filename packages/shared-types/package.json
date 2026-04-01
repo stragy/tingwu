@@ -1,0 +1,19 @@
+{
+  "name": "@tingwu/shared-types",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "pino": "^8.16.2",
+    "pino-pretty": "^10.2.3",
+    "typeorm": "^0.3.17"
+  },
+  "devDependencies": {
+    "@types/pino": "^7.0.5",
+    "typescript": "^5.3.2"
+  }
+}

@@ -1,0 +1,224 @@
+version: '3.8'
+services:
+  # API Gateway
+  gateway:
+    build:
+      context: packages/gateway
+      dockerfile: Dockerfile
+    container_name: tingwu-gateway
+    ports:
+      - '${GATEWAY_PORT:-80}:80'
+    depends_on:
+      auth-service:
+        condition: service_started
+      user-service:
+        condition: service_started
+      practice-service:
+        condition: service_started
+      evaluation-service:
+        condition: service_started
+      scheduling-service:
+        condition: service_started
+      analytics-service:
+        condition: service_started
+    restart: unless-stopped
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
+  # PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: tingwu-postgres
+    environment:
+      POSTGRES_USER: tingwu
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      POSTGRES_DB: tingwu_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U tingwu']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: tingwu-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # LocalStack
+  localstack:
+    image: localstack/localstack:latest
+    container_name: tingwu-localstack
+    environment:
+      SERVICES: s3
+      DEBUG: 1
+      DATA_DIR: /tmp/localstack/data
+      AWS_DEFAULT_REGION: us-east-1
+    ports:
+      - '4566:4566'
+    volumes:
+      - localstack_data:/tmp/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # Auth Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: packages/auth-service/Dockerfile
+    container_name: tingwu-auth-service
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://tingwu:${DB_PASSWORD:?DB_PASSWORD is required}@postgres:5432/tingwu_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./packages/auth-service:/app/packages/auth-service
+      - /app/packages/auth-service/node_modules
+
+  # User Service
+  user-service:
+    build:
+      context: .
+      dockerfile: packages/user-service/Dockerfile
+    container_name: tingwu-user-service
+    environment:
+      PORT: 3002
+      DATABASE_URL: postgresql://tingwu:${DB_PASSWORD:?DB_PASSWORD is required}@postgres:5432/tingwu_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - '3002:3002'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./packages/user-service:/app/packages/user-service
+      - /app/packages/user-service/node_modules
+
+  # Practice Service
+  practice-service:
+    build:
+      context: .
+      dockerfile: packages/practice-service/Dockerfile
+    container_name: tingwu-practice-service
+    environment:
+      PORT: 3003
+      DATABASE_URL: postgresql://tingwu:${DB_PASSWORD:?DB_PASSWORD is required}@postgres:5432/tingwu_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      AWS_ENDPOINT: http://localstack:4566
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      S3_BUCKET: tingwu-audio-recordings
+    ports:
+      - '3003:3003'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      localstack:
+        condition: service_started
+    volumes:
+      - ./packages/practice-service:/app/packages/practice-service
+      - /app/packages/practice-service/node_modules
+
+  # Evaluation Service
+  evaluation-service:
+    build:
+      context: .
+      dockerfile: packages/evaluation-service/Dockerfile
+    container_name: tingwu-evaluation-service
+    environment:
+      PORT: 3004
+      DATABASE_URL: postgresql://tingwu:${DB_PASSWORD:?DB_PASSWORD is required}@postgres:5432/tingwu_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      AWS_ENDPOINT: http://localstack:4566
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    ports:
+      - '3004:3004'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./packages/evaluation-service:/app/packages/evaluation-service
+      - /app/packages/evaluation-service/node_modules
+
+  # Scheduling Service
+  scheduling-service:
+    build:
+      context: .
+      dockerfile: packages/scheduling-service/Dockerfile
+    container_name: tingwu-scheduling-service
+    environment:
+      PORT: 3005
+      DATABASE_URL: postgresql://tingwu:${DB_PASSWORD:?DB_PASSWORD is required}@postgres:5432/tingwu_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - '3005:3005'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./packages/scheduling-service:/app/packages/scheduling-service
+      - /app/packages/scheduling-service/node_modules
+
+  # Analytics Service
+  analytics-service:
+    build:
+      context: .
+      dockerfile: packages/analytics-service/Dockerfile
+    container_name: tingwu-analytics-service
+    environment:
+      PORT: 3006
+      DATABASE_URL: postgresql://tingwu:${DB_PASSWORD:?DB_PASSWORD is required}@postgres:5432/tingwu_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - '3006:3006'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./packages/analytics-service:/app/packages/analytics-service
+      - /app/packages/analytics-service/node_modules
+
+volumes:
+  postgres_data:
+  redis_data:
+  localstack_data:

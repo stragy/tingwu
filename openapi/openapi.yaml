@@ -1,0 +1,1131 @@
+openapi: 3.0.3
+info:
+  title: Tingwu Zhongkao AI Listening-Speaking API
+  version: 1.0.0
+  description: Contract-first API specification for backend microservices.
+  license:
+    name: Proprietary
+servers:
+  - url: http://localhost:3001
+    description: Auth Service
+  - url: http://localhost:3002
+    description: User Service
+  - url: http://localhost:3003
+    description: Practice Service
+  - url: http://localhost:3004
+    description: Evaluation Service
+  - url: http://localhost:3005
+    description: Scheduling Service
+  - url: http://localhost:3006
+    description: Analytics Service
+tags:
+  - name: Health
+    description: Service status and readiness.
+  - name: Auth
+    description: User authentication and token lifecycle.
+  - name: User
+    description: User profile and learning status management.
+  - name: Practice
+    description: Audio upload and practice session flow.
+  - name: Evaluation
+    description: Retelling evaluation and scoring.
+  - name: Scheduling
+    description: Adaptive schedule generation and progress update.
+  - name: Analytics
+    description: Learning analytics aggregation and reporting.
+security:
+  - bearerAuth: []
+paths:
+  /health:
+    get:
+      security: []
+      tags: [Health]
+      summary: Service health check
+      responses:
+        '200':
+          description: Service status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/v1/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Logout success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/v1/auth/refresh-token:
+    post:
+      tags: [Auth]
+      summary: Refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: New tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokens'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/v1/auth/request-password-reset:
+    post:
+      tags: [Auth]
+      summary: Request password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, newPassword]
+              properties:
+                token:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        '200':
+          description: Password reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/users/{userId}/profile:
+    get:
+      tags: [User]
+      security: [{ bearerAuth: [] }]
+      summary: Get profile
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [User]
+      security: [{ bearerAuth: [] }]
+      summary: Update profile
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileUpdatedResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/users/{userId}/baseline-assessment:
+    post:
+      tags: [User]
+      security: [{ bearerAuth: [] }]
+      summary: Initialize baseline
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Baseline initialized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  baselineLevel:
+                    $ref: '#/components/schemas/LevelScore'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/users/{userId}/learning-path:
+    get:
+      tags: [User]
+      security: [{ bearerAuth: [] }]
+      summary: Get learning path
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Learning path
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/users/{userId}/progress:
+    get:
+      tags: [User]
+      security: [{ bearerAuth: [] }]
+      summary: Get progress
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Progress
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  currentLevel:
+                    $ref: '#/components/schemas/LevelScore'
+                  baselineLevel:
+                    $ref: '#/components/schemas/LevelScore'
+                  learningPath:
+                    type: object
+                    nullable: true
+                    additionalProperties: true
+                  progress:
+                    oneOf:
+                      - type: string
+                      - type: number
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/audio/upload:
+    post:
+      tags: [Practice]
+      security: [{ bearerAuth: [] }]
+      summary: Upload audio
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [audio]
+              properties:
+                audio:
+                  type: string
+                  format: binary
+                sessionId:
+                  type: string
+                duration:
+                  type: number
+                sampleRate:
+                  type: number
+      responses:
+        '201':
+          description: Uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  recording:
+                    $ref: '#/components/schemas/AudioRecording'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/v1/audio/{recordingId}:
+    get:
+      tags: [Practice]
+      security: [{ bearerAuth: [] }]
+      summary: Get audio metadata
+      parameters:
+        - name: recordingId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AudioRecording'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/audio:
+    get:
+      tags: [Practice]
+      security: [{ bearerAuth: [] }]
+      summary: List user recordings
+      responses:
+        '200':
+          description: Recording list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recordings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AudioRecording'
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/v1/practice/retelling/start:
+    post:
+      tags: [Practice]
+      security: [{ bearerAuth: [] }]
+      summary: Start retelling session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [exerciseId]
+              properties:
+                exerciseId:
+                  type: string
+      responses:
+        '201':
+          description: Session started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  session:
+                    $ref: '#/components/schemas/RetellingSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/v1/practice/retelling/{sessionId}/start-notes:
+    post:
+      tags: [Practice]
+      security: [{ bearerAuth: [] }]
+      summary: Start note taking
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Note taking started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  session:
+                    $ref: '#/components/schemas/RetellingSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/practice/retelling/{sessionId}/start-retelling:
+    post:
+      tags: [Practice]
+      security: [{ bearerAuth: [] }]
+      summary: Start retelling
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Retelling started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  session:
+                    $ref: '#/components/schemas/RetellingSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/practice/retelling/{sessionId}/complete:
+    post:
+      tags: [Practice]
+      security: [{ bearerAuth: [] }]
+      summary: Complete retelling
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  session:
+                    $ref: '#/components/schemas/RetellingSession'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/practice/retelling/{sessionId}:
+    get:
+      tags: [Practice]
+      security: [{ bearerAuth: [] }]
+      summary: Get retelling session
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetellingSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/evaluation/retelling:
+    post:
+      tags: [Evaluation]
+      summary: Evaluate retelling
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RetellingEvaluationRequest'
+      responses:
+        '201':
+          description: Evaluation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetellingEvaluation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/evaluation/retelling/{evaluationId}:
+    get:
+      tags: [Evaluation]
+      summary: Get evaluation result
+      parameters:
+        - name: evaluationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Evaluation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetellingEvaluation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/schedules/generate:
+    post:
+      tags: [Scheduling]
+      summary: Generate schedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: string
+                weakAreas:
+                  type: array
+                  items:
+                    type: string
+                examDate:
+                  type: string
+                  format: date
+                  nullable: true
+      responses:
+        '201':
+          description: Generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchedule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/schedules/{userId}:
+    get:
+      tags: [Scheduling]
+      summary: Get user schedule
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Schedule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchedule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/schedules/{scheduleId}/progress:
+    put:
+      tags: [Scheduling]
+      summary: Update schedule progress
+      parameters:
+        - name: scheduleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                completedSessionIds:
+                  type: array
+                  items:
+                    type: string
+                performanceDelta:
+                  type: number
+      responses:
+        '200':
+          description: Updated schedule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchedule'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/analytics/events:
+    post:
+      tags: [Analytics]
+      summary: Record analytics event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyticsEventRequest'
+      responses:
+        '201':
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsEvent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/analytics/{userId}/progress-summary:
+    get:
+      tags: [Analytics]
+      summary: Progress summary
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/analytics/{userId}/performance-trend:
+    get:
+      tags: [Analytics]
+      summary: Performance trend by dimension
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+        - name: dimension
+          in: query
+          schema:
+            type: string
+            enum: [pronunciation, fluency, intonation, comprehension]
+      responses:
+        '200':
+          description: Trend points
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceTrend'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/analytics/{userId}/report:
+    get:
+      tags: [Analytics]
+      summary: Analytics report
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsReport'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        service:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: object
+          nullable: true
+          additionalProperties: true
+    AuthTokens:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        userId:
+          type: string
+        expiresIn:
+          type: integer
+    RegisterRequest:
+      type: object
+      required: [username, password, email, name, grade]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        grade:
+          type: integer
+        school:
+          type: string
+          nullable: true
+        targetExamDate:
+          type: string
+          nullable: true
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LevelScore:
+      type: object
+      properties:
+        overall:
+          type: number
+        pronunciation:
+          type: number
+        fluency:
+          type: number
+        intonation:
+          type: number
+        comprehension:
+          type: number
+    UserProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+        name:
+          type: string
+        grade:
+          type: integer
+        school:
+          type: string
+          nullable: true
+        targetExamDate:
+          type: string
+          nullable: true
+        baselineLevel:
+          $ref: '#/components/schemas/LevelScore'
+        currentLevel:
+          $ref: '#/components/schemas/LevelScore'
+        learningPath:
+          type: object
+          nullable: true
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        grade:
+          type: integer
+        school:
+          type: string
+          nullable: true
+        targetExamDate:
+          type: string
+          nullable: true
+    ProfileUpdatedResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        profile:
+          $ref: '#/components/schemas/UpdateProfileRequest'
+    AudioRecording:
+      type: object
+      properties:
+        recordingId:
+          type: string
+        userId:
+          type: string
+        sessionId:
+          type: string
+        filename:
+          type: string
+        url:
+          type: string
+        size:
+          type: integer
+        mimetype:
+          type: string
+        duration:
+          type: number
+        sampleRate:
+          type: number
+        uploadedAt:
+          type: string
+          format: date-time
+    RetellingSession:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        userId:
+          type: string
+        exerciseId:
+          type: string
+        status:
+          type: string
+          enum: [preparation, note_taking, retelling, completed]
+        startTime:
+          type: string
+          format: date-time
+        noteStartTime:
+          type: string
+          format: date-time
+          nullable: true
+        noteEndTime:
+          type: string
+          format: date-time
+          nullable: true
+        retellingStartTime:
+          type: string
+          format: date-time
+          nullable: true
+        retellingEndTime:
+          type: string
+          format: date-time
+          nullable: true
+    RetellingContent:
+      type: object
+      required: [audioUrl, transcript, duration, noteTime, retellingTime, keyPoints]
+      properties:
+        audioUrl:
+          type: string
+        transcript:
+          type: string
+        duration:
+          type: number
+        noteTime:
+          type: number
+        retellingTime:
+          type: number
+        keyPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyPoint'
+    KeyPoint:
+      type: object
+      properties:
+        pointId:
+          type: string
+        content:
+          type: string
+        importance:
+          type: number
+        category:
+          type: string
+    KeyPointCoverage:
+      type: object
+      properties:
+        pointId:
+          type: string
+        content:
+          type: string
+        importance:
+          type: number
+        covered:
+          type: boolean
+        confidence:
+          type: number
+    RetellingEvaluationRequest:
+      type: object
+      required: [sessionId, studentTranscript, retellingContent]
+      properties:
+        sessionId:
+          type: string
+        studentTranscript:
+          type: string
+        retellingContent:
+          $ref: '#/components/schemas/RetellingContent'
+    RetellingEvaluation:
+      type: object
+      properties:
+        evaluationId:
+          type: string
+        sessionId:
+          type: string
+        transcript:
+          type: string
+        keyPointsCovered:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyPointCoverage'
+        completenessScore:
+          type: number
+        pronunciationScore:
+          type: number
+        fluencyScore:
+          type: number
+        overallScore:
+          type: number
+        feedback:
+          type: string
+        evaluatedAt:
+          type: string
+          format: date-time
+    ScheduleItem:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        questionType:
+          type: string
+        focusArea:
+          type: string
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        plannedMinutes:
+          type: integer
+    UserSchedule:
+      type: object
+      properties:
+        scheduleId:
+          type: string
+        userId:
+          type: string
+        generatedAt:
+          type: string
+          format: date-time
+        examDate:
+          type: string
+          nullable: true
+        intensity:
+          type: string
+          enum: [low, medium, high]
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleItem'
+        completedSessionIds:
+          type: array
+          items:
+            type: string
+    AnalyticsEventRequest:
+      type: object
+      required: [userId, score, dimensionScores, questionType]
+      properties:
+        userId:
+          type: string
+        score:
+          type: number
+        questionType:
+          type: string
+        dimensionScores:
+          type: object
+          required: [pronunciation, fluency, intonation, comprehension]
+          properties:
+            pronunciation:
+              type: number
+            fluency:
+              type: number
+            intonation:
+              type: number
+            comprehension:
+              type: number
+    AnalyticsEvent:
+      allOf:
+        - $ref: '#/components/schemas/AnalyticsEventRequest'
+        - type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+    ProgressSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+        totalSessions:
+          type: integer
+        averageScore:
+          type: number
+        scoreImprovement:
+          type: number
+        lastUpdatedAt:
+          type: string
+          format: date-time
+    PerformanceTrend:
+      type: object
+      properties:
+        userId:
+          type: string
+        dimension:
+          type: string
+        points:
+          type: array
+          items:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              score:
+                type: number
+    AnalyticsReport:
+      type: object
+      properties:
+        userId:
+          type: string
+        totalSessions:
+          type: integer
+        overallAverage:
+          type: number
+        weakestDimension:
+          type: string
+        dimensionAverages:
+          type: object
+          properties:
+            pronunciation:
+              type: number
+            fluency:
+              type: number
+            intonation:
+              type: number
+            comprehension:
+              type: number

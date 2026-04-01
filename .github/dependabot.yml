@@ -1,0 +1,74 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Asia/Shanghai'
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: 'deps'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'security'
+    reviewers:
+      - 'team/backend'
+    groups:
+      production-dependencies:
+        patterns:
+          - '*'
+        exclude-patterns:
+          - '@types/*'
+          - '@types/*'
+          - 'typescript'
+          - 'eslint*'
+          - 'prettier*'
+          - 'jest'
+          - '@jest/*'
+          - 'ts-jest'
+          - 'supertest'
+        update-types:
+          - 'minor'
+          - 'patch'
+      development-dependencies:
+        patterns:
+          - '@types/*'
+          - 'typescript'
+          - 'eslint*'
+          - 'prettier*'
+          - 'jest'
+          - '@jest/*'
+          - 'ts-jest'
+          - 'supertest'
+        update-types:
+          - 'minor'
+          - 'patch'
+
+  - package-ecosystem: 'docker'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Asia/Shanghai'
+    commit-message:
+      prefix: 'docker'
+    labels:
+      - 'dependencies'
+      - 'docker'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Asia/Shanghai'
+    commit-message:
+      prefix: 'ci'
+    labels:
+      - 'ci'
+      - 'dependencies'

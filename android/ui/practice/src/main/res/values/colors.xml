@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 使用浅灰色作为进度条背景 -->
+    <color name="gray_light">#F5F5F5</color>
+    <!-- 其他常用颜色 -->
+    <color name="recording_red">#FF5252</color>
+    <color name="recording_green">#4CAF50</color>
+</resources>

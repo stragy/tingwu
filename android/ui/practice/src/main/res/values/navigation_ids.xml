@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Navigation action IDs declared here so that the ui:practice module
+        can navigate to resultFragment without depending on the app module's R class.
+        These IDs must match the corresponding <action android:id="..."> in
+        app/src/main/res/navigation/nav_graph.xml and
+        ui/home/src/main/res/navigation/nav_home.xml.
+    -->
+    <item name="action_practiceFragment_to_resultFragment" type="id" />
+</resources>
+

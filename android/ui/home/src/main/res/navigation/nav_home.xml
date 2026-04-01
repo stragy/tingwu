@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_home"
+    app:startDestination="@id/exerciseListFragment">
+
+    <fragment
+        android:id="@+id/exerciseListFragment"
+        android:name="com.tingwu.ui.home.presentation.ExerciseListFragment"
+        android:label="练习">
+        <action
+            android:id="@+id/action_exerciseListFragment_to_exerciseDetailFragment"
+            app:destination="@id/exerciseDetailFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/exerciseDetailFragment"
+        android:name="com.tingwu.ui.home.presentation.ExerciseDetailFragment"
+        android:label="题目详情">
+        <argument
+            android:name="exerciseId"
+            app:argType="string" />
+        <argument
+            android:name="exerciseTitle"
+            app:argType="string"
+            android:defaultValue="" />
+        <action
+            android:id="@+id/action_exerciseDetailFragment_to_practiceFragment"
+            app:destination="@id/practiceFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <!-- 练习 Fragment 来自 app 模块 -->
+    <fragment
+        android:id="@+id/practiceFragment"
+        android:name="com.tingwu.ui.practice.presentation.PracticeFragment"
+        android:label="练习">
+        <argument
+            android:name="exerciseId"
+            app:argType="string"
+            android:defaultValue="exercise_demo_001" />
+        <argument
+            android:name="exerciseTitle"
+            app:argType="string"
+            android:defaultValue="练习" />
+        <action
+            android:id="@+id/action_practiceFragment_to_resultFragment"
+            app:destination="@id/resultFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="com.tingwu.ui.practice.presentation.ResultFragment"
+        android:label="评测结果">
+        <argument
+            android:name="evaluationId"
+            app:argType="string" />
+        <argument
+            android:name="sessionId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.tingwu.ui.home.presentation.StatsFragment"
+        android:label="统计" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.tingwu.ui.home.presentation.SettingsFragment"
+        android:label="设置" />
+
+</navigation>

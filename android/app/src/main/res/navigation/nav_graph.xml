@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+    <!-- 全局 action：从任意页面退出登录回登录页 -->
+    <action
+        android:id="@+id/action_global_loginFragment"
+        app:destination="@id/loginFragment"
+        app:popUpTo="@id/nav_graph"
+        app:popUpToInclusive="true" />
+
+    <!-- Auth Navigation -->
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.tingwu.ui.auth.presentation.LoginFragment"
+        android:label="@string/login_title">
+        <action
+            android:id="@+id/action_loginFragment_to_homeContainerFragment"
+            app:destination="@id/homeContainerFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+        <!-- 保留旧 action 兼容 LoginFragment 中已有代码 -->
+        <action
+            android:id="@+id/action_loginFragment_to_practiceFragment"
+            app:destination="@id/homeContainerFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!-- Home 主界面容器（含底部导航） -->
+    <fragment
+        android:id="@+id/homeContainerFragment"
+        android:name="com.tingwu.ui.home.presentation.HomeContainerFragment"
+        android:label="@string/app_name" />
+
+    <!-- Practice Navigation（保留，供直接跳转使用） -->
+    <fragment
+        android:id="@+id/practiceFragment"
+        android:name="com.tingwu.ui.practice.presentation.PracticeFragment"
+        android:label="@string/practice_title">
+        <argument
+            android:name="exerciseId"
+            app:argType="string"
+            android:defaultValue="exercise_demo_001" />
+        <argument
+            android:name="exerciseTitle"
+            app:argType="string"
+            android:defaultValue="练习" />
+        <action
+            android:id="@+id/action_practiceFragment_to_resultFragment"
+            app:destination="@id/resultFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <!-- Result Navigation -->
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="com.tingwu.ui.practice.presentation.ResultFragment"
+        android:label="@string/result_title">
+        <argument
+            android:name="evaluationId"
+            app:argType="string" />
+        <argument
+            android:name="sessionId"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

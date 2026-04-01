@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Navigation action IDs for ui:home module.
+        Must match the corresponding <action android:id="..."> in
+        app/src/main/res/navigation/nav_graph.xml
+    -->
+    <item name="action_global_loginFragment" type="id" />
+    <item name="action_exerciseListFragment_to_exerciseDetailFragment" type="id" />
+    <item name="action_exerciseDetailFragment_to_practiceFragment" type="id" />
+    <item name="action_practiceFragment_to_resultFragment" type="id" />
+</resources>

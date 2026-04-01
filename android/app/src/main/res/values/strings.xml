@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">听悟</string>
+    <string name="login_title">登录</string>
+    <string name="phone_number_hint">请输入手机号</string>
+    <string name="sms_code_hint">请输入验证码</string>
+    <string name="request_sms_code">获取验证码</string>
+    <string name="verify_code">验证</string>
+    <string name="resend_code">重新发送</string>
+    <string name="countdown_format">%d秒后重试</string>
+    <string name="start_recording">开始录音</string>
+    <string name="stop_recording">停止录音</string>
+    <string name="play_recording">播放</string>
+    <string name="delete_recording">删除</string>
+    <string name="submit">提交</string>
+    <string name="cancel">取消</string>
+    <string name="error_network">网络连接失败</string>
+    <string name="error_invalid_phone">请输入有效的手机号</string>
+    <string name="error_invalid_code">验证码无效</string>
+    <string name="loading">加载中...</string>
+    <string name="success">成功</string>
+
+    <!-- LoginFragment 引用的字符串 -->
+    <string name="send_code">发送验证码</string>
+    <string name="resend_countdown">%d秒后重发</string>
+    <string name="sms_sent">验证码已发送，请注意查收</string>
+
+    <!-- PracticeFragment 引用的字符串 -->
+    <string name="session_label">会话 ID：%s…</string>
+    <string name="status_label">状态：%s</string>
+    <string name="recording_time_format">%02d:%02d</string>
+    <string name="permission_audio_denied">需要麦克风权限才能录音，请在设置中开启</string>
+    <string name="permission_audio_rationale">听悟需要麦克风权限来录制你的朗读音频，用于发音评测</string>
+
+    <!-- 练习界面按钮文字 -->
+    <string name="btn_pause">暂停</string>
+    <string name="btn_resume">继续</string>
+    <string name="btn_submit">完成并提交</string>
+    <string name="practice_title">练习</string>
+
+    <!-- ResultFragment 结果页字符串 -->
+    <string name="result_title">综合评分</string>
+    <string name="result_score_unit">分</string>
+    <string name="result_pronunciation">发音</string>
+    <string name="result_fluency">流利度</string>
+    <string name="result_content">内容</string>
+    <string name="result_duration">录音时长：%s</string>
+    <string name="result_detail_title">逐句详情</string>
+    <string name="result_play_recording">重听录音</string>
+    <string name="result_practice_again">再练一次</string>
+    <string name="result_loading">正在加载评测结果…</string>
+    <string name="result_not_found">评测结果未找到</string>
+    <string name="result_duration_format">%02d:%02d</string>
+    <string name="result_sentence_score">%s分</string>
+    <string name="result_word_correct">✓</string>
+    <string name="result_word_wrong">✗</string>
+
+    <!-- HomeContainerFragment / 底部导航 -->
+    <string name="nav_exercises">练习</string>
+    <string name="nav_stats">统计</string>
+    <string name="nav_settings">设置</string>
+
+    <!-- ExerciseListFragment -->
+    <string name="exercise_list_title">全部练习题</string>
+    <string name="filter_all">全部</string>
+    <string name="filter_reading">朗读</string>
+    <string name="filter_situational">情景问答</string>
+    <string name="filter_retelling">信息复述</string>
+    <string name="filter_role_play">角色扮演</string>
+    <string name="empty_exercises">暂无练习题目</string>
+    <string name="error_load_exercises">加载失败，请重试</string>
+
+    <!-- ExerciseDetailFragment -->
+    <string name="exercise_detail_type">题目类型</string>
+    <string name="exercise_detail_difficulty">难度</string>
+    <string name="exercise_detail_instructions">练习说明</string>
+    <string name="exercise_detail_content">练习内容</string>
+    <string name="btn_start_practice">开始练习</string>
+
+    <!-- StatsFragment -->
+    <string name="stats_title">学习统计</string>
+    <string name="stats_total_practices">练习次数</string>
+    <string name="stats_average_score">平均分</string>
+    <string name="stats_best_score">最高分</string>
+    <string name="stats_streak">连续天数</string>
+    <string name="stats_duration">累计时长</string>
+    <string name="stats_pronunciation">发音</string>
+    <string name="stats_fluency">流利度</string>
+    <string name="stats_content">内容</string>
+    <string name="stats_history_title">练习记录</string>
+    <string name="stats_empty_history">暂无练习记录\n完成第一次练习后，记录将显示在这里</string>
+
+    <!-- SettingsFragment -->
+    <string name="settings_title">设置</string>
+    <string name="settings_reminder">每日练习提醒</string>
+    <string name="settings_sound">音效</string>
+    <string name="settings_feedback">用户反馈</string>
+    <string name="settings_clear_cache">清除缓存</string>
+    <string name="settings_about">关于听悟</string>
+    <string name="btn_logout">退出登录</string>
+    <string name="logout_confirm_title">退出登录</string>
+    <string name="logout_confirm_message">确定要退出登录吗？</string>
+</resources>

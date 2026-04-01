@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Navigation action IDs for ui:auth module.
+        Must match the corresponding <action android:id="..."> in
+        app/src/main/res/navigation/nav_graph.xml
+    -->
+    <item name="action_loginFragment_to_practiceFragment" type="id" />
+    <item name="action_loginFragment_to_homeContainerFragment" type="id" />
+</resources>
