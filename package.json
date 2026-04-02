@@ -34,7 +34,7 @@
     "@typescript-eslint/parser": "^6.13.0",
     "dotenv": "^17.3.1",
     "dredd": "^14.1.0",
-    "eslint": "^8.54.0",
+    "eslint": "^10.1.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.29.0",
     "prettier": "^3.1.0",
