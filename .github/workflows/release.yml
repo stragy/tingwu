@@ -76,14 +76,14 @@ jobs:
           keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
           
       - name: Upload signed APK to artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: signed-release-apk
           path: ${{ steps.sign_apk.outputs.releaseDirectory }}
           retention-days: 30
           
       - name: Upload signed AAB to artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: signed-release-aab
           path: ${{ steps.sign_aab.outputs.releaseDirectory }}
