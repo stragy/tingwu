@@ -1,0 +1,17 @@
+Error: listen EADDRINUSE: address already in use :::3005
+    at Server.setupListenHandle [as _listen2] (node:net:1872:16)
+    at listenInCluster (node:net:1920:12)
+    at Server.listen (node:net:2008:7)
+    at Function.listen (G:\听说\node_modules\express\lib\application.js:635:24)
+    at Object.<anonymous> (G:\听说\packages\scheduling-service\src\index.ts:141:7)
+    at Module._compile (node:internal/modules/cjs/loader:1241:14)
+    at Module.m._compile (G:\听说\node_modules\ts-node\src\index.ts:1618:23)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1295:10)
+    at Object.require.extensions.<computed> [as .ts] (G:\听说\node_modules\ts-node\src\index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1091:32) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 3005
+}
