@@ -41,7 +41,7 @@ jobs:
           
       - name: Upload lint results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: lint-results
           path: android/app/build/reports/lint-results*.html
@@ -81,7 +81,7 @@ jobs:
           
       - name: Upload Detekt results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: detekt-results
           path: android/build/reports/detekt/
@@ -121,7 +121,7 @@ jobs:
           
       - name: Upload ktlint results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: ktlint-results
           path: android/build/reports/ktlint/
